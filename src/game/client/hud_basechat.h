@@ -300,6 +300,29 @@ public:
 	void			SetCustomColor( Color colNew ) { m_ColorCustom = colNew; }
 	void			SetCustomColor( const char *pszColorName );
 
+	virtual void OnKeyCodeTyped(vgui::KeyCode code)
+	{
+		if (code == KEY_ENTER || code == KEY_PAD_ENTER || code == KEY_ESCAPE)
+		{
+			if (code != KEY_ESCAPE)
+			{
+				PostMessage(this, new KeyValues("ChatEntrySend"));
+			}
+
+			// End message mode.
+			PostMessage(this, new KeyValues("ChatEntryStopMessageMode"));
+		}
+		else if (code == KEY_TAB)
+		{
+			// Ignore tab, otherwise vgui will screw up the focus.
+			return;
+		}
+		else
+		{
+			BaseClass::OnKeyCodeTyped(code);
+		}
+	}
+
 protected:
 	CBaseHudChatLine		*FindUnusedChatLine( void );
 
