@@ -36,27 +36,24 @@ extern void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const 
 IMPLEMENT_NETWORKCLASS_ALIASED( TFBaseRocket, DT_TFBaseRocket )
 
 BEGIN_NETWORK_TABLE( CTFBaseRocket, DT_TFBaseRocket )
-// Client specific.
 #ifdef CLIENT_DLL
-RecvPropVector( RECVINFO( m_vInitialVelocity ) ),
+	RecvPropVector( RECVINFO( m_vInitialVelocity ) ),
 
-RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-RecvPropQAngles( RECVINFO_NAME( m_angNetworkAngles, m_angRotation ) ),
-RecvPropInt( RECVINFO( m_iDeflected ) ),
-RecvPropEHandle( RECVINFO( m_hLauncher ) ),
+	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
+	RecvPropQAngles( RECVINFO_NAME( m_angNetworkAngles, m_angRotation ) ),
+	RecvPropInt( RECVINFO( m_iDeflected ) ),
+	RecvPropEHandle( RECVINFO( m_hLauncher ) ),
 
-// Server specific.
 #else
-SendPropVector( SENDINFO( m_vInitialVelocity ), 12 /*nbits*/, 0 /*flags*/, -3000 /*low value*/, 3000 /*high value*/	),
+	SendPropVector( SENDINFO( m_vInitialVelocity ), 12 /*nbits*/, 0 /*flags*/, -3000 /*low value*/, 3000 /*high value*/	),
 
-SendPropExclude( "DT_BaseEntity", "m_vecOrigin" ),
-SendPropExclude( "DT_BaseEntity", "m_angRotation" ),
+	SendPropExclude( "DT_BaseEntity", "m_vecOrigin" ),
+	SendPropExclude( "DT_BaseEntity", "m_angRotation" ),
 
-SendPropVector	(SENDINFO(m_vecOrigin), -1,  SPROP_COORD_MP_INTEGRAL|SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin ),
-SendPropQAngles	(SENDINFO(m_angRotation), 6, SPROP_CHANGES_OFTEN, SendProxy_Angles ),
-SendPropInt( SENDINFO( m_iDeflected ), 4, SPROP_UNSIGNED ),
-SendPropEHandle( SENDINFO( m_hLauncher ) ),
-
+	SendPropVector	(SENDINFO(m_vecOrigin), -1,  SPROP_COORD_MP_LOWPRECISION|SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin ),
+	SendPropQAngles	(SENDINFO(m_angRotation), 6, SPROP_CHANGES_OFTEN, SendProxy_Angles ),
+	SendPropInt( SENDINFO( m_iDeflected ), 4, SPROP_UNSIGNED ),
+	SendPropEHandle( SENDINFO( m_hLauncher ) ),
 #endif
 END_NETWORK_TABLE()
 
