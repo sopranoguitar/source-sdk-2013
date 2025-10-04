@@ -613,8 +613,13 @@ int RichText::DrawString(int iFirst, int iLast, TRenderState &renderState, HFont
 
 	// Calculate the render size
 	int fontTall = surface()->GetFontTall(font);
-	// BUGBUG John: This won't exactly match the rendered size
-	int charWide = 0;
+	int charWide = 0; // BUGBUG John: This won't exactly match the rendered size
+
+	// draw selection, if any
+	int selection0 = -1, selection1 = -1;
+	GetSelectedRange(selection0, selection1);
+	int selectionStart = -1, selectionEnd = -1;
+
 	for ( int i = iFirst; i <= iLast; i++ )
 	{
 		wchar_t ch = m_TextStream[i];
@@ -633,32 +638,35 @@ int RichText::DrawString(int iFirst, int iLast, TRenderState &renderState, HFont
 #else
 		charWide += surface()->GetCharacterWidth(font, ch);
 #endif
+
+		if ( selection0 != -1 )
+		{
+			if ( i < selection0 )
+				selectionStart = charWide;
+			else if ( i < selection1 )
+				selectionEnd = charWide;
+		}
 	}
 
-	// draw selection, if any
-	int selection0 = -1, selection1 = -1;
-	GetSelectedRange(selection0, selection1);
-		
-	if (iFirst >= selection0 && iFirst < selection1)
-	{
-		// draw background selection color
-		surface()->DrawSetColor(_selectionColor);
-		surface()->DrawFilledRect(renderState.x, renderState.y, renderState.x + charWide, renderState.y + 1 + fontTall);
-		
-		// reset text color
-		surface()->DrawSetTextColor(_selectionTextColor);
-		m_bAllTextAlphaIsZero = false;
-	}
-	else
-	{
-		surface()->DrawSetTextColor(renderState.textColor);
-	}
-		
+	surface()->DrawSetTextColor(renderState.textColor);
 	if ( renderState.textColor.a() != 0 )
 	{
 		m_bAllTextAlphaIsZero = false;
 		surface()->DrawSetTextPos(renderState.x, renderState.y);
 		surface()->DrawPrintText(&m_TextStream[iFirst], iLast - iFirst + 1);
+	}
+	if ( selection0 != -1 )
+	{
+		selection0 = clamp(selection0, iFirst, iLast + 1);
+		selection1 = clamp(selection1, iFirst, iLast + 1);
+
+		surface()->DrawSetColor(_selectionColor);
+		surface()->DrawFilledRect(renderState.x + selectionStart, renderState.y, renderState.x + selectionEnd, renderState.y + 1 + fontTall);
+		surface()->DrawSetTextColor(_selectionTextColor);
+
+		m_bAllTextAlphaIsZero = false;
+		surface()->DrawSetTextPos(renderState.x + selectionStart, renderState.y);
+		surface()->DrawPrintText(&m_TextStream[selection0], selection1 - selection0);
 	}
 			
 	return charWide;
