@@ -590,7 +590,7 @@ void CNetGraphPanel::GetFrameData( 	INetChannelInfo *netchannel, int *biggest_me
 	m_UpdateWindowSize = netchannel->GetBufferSize();
 	m_AvgPacketLoss	   = netchannel->GetAvgLoss( FLOW_INCOMING );
 	m_AvgPacketChoke   = netchannel->GetAvgChoke( FLOW_INCOMING );
-	m_AvgLatency	   = netchannel->GetAvgLatency( FLOW_OUTGOING );
+	m_AvgLatency	   = netchannel->GetAvgLatency( FLOW_OUTGOING ) + netchannel->GetAvgLatency( FLOW_INCOMING );
 	m_IncomingData	   = netchannel->GetAvgData( FLOW_INCOMING ) / 1024.0f;
 	m_OutgoingData	   = netchannel->GetAvgData( FLOW_OUTGOING ) / 1024.0f;
 	m_AvgPacketIn      = netchannel->GetAvgPackets( FLOW_INCOMING );

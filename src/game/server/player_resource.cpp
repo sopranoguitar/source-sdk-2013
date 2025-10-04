@@ -142,9 +142,6 @@ void CPlayerResource::UpdateConnectedPlayer( int iIndex, CBasePlayer *pPlayer )
 		int ping, packetloss;
 		UTIL_GetPlayerConnectionInfo( iIndex, ping, packetloss );
 				
-		// calc avg for scoreboard so it's not so jittery
-		ping = 0.8f * m_iPing.Get( iIndex ) + 0.2f * ping;
-				
 		m_iPing.Set( iIndex, ping );
 		// m_iPacketloss.Set( iSlot, packetloss );
 	}
